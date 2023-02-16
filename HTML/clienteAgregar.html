@@ -1,0 +1,136 @@
+<html>
+<head>
+<script
+	src="https://code.jquery.com/jquery-3.4.1.js"></script> 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+	<div class="titulo"><p>Agregar Nuevo Cliente</p> </div>
+  <div class="center">
+    <form action="#" class="border p-3 form">
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input type="text" name="nombre" id="nombre" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="desc">Descripcion</label>
+        <input type="text" name="descripcion" id="descripcion" class="form-control">
+      </div>
+	  <div class="form-group">
+        <label for="telefono">Telefono</label>
+        <input type="tel" name="telefono" id="telefono" class="form-control" required>
+      </div>
+	  	  <div class="form-group">
+        <label for="docu">Documentacion</label>
+        <input type="text" name="documentacion" id="documentacion" class="form-control">
+      </div>
+	  <input type="hidden" name="estatus" id="estatus" value="1">
+     <input type="submit" name="submit" class="button" id="submit_btn" value="Guardar" />
+    </form>
+		<div class="titulo">
+			<p id="aviso"></p>
+      </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-6">
+    <table id="tablaCliente" 
+           class="table table-bordered 
+                  table-condensed table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripcion</th>
+          <th>telefono</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+
+<script>
+//document.getElementById("demo").innerHTML = "Hello JavaScript!";
+$(document).ready(function () {  
+     $.ajax({
+    url: 'http://localhost:8080/api/cliente/',
+    type: 'GET',
+    dataType: 'json',
+    success: function (clientes) {
+      ListaClientes(clientes);
+    },
+    error: function (request, message, error) {
+      handleException(request, message, error);
+    }
+  });   	 
+	 
+});
+
+function ListaClientes(clientes) {
+  // Iterate over the collection of data
+  $.each(clientes, function (index, cliente) {
+    // Add a row to the Product table
+    agregarFila(cliente);
+  });
+}
+
+function agregarFila(cliente) {
+  if ($("#tablaCliente tbody").length == 0) {
+   $("#tablaCliente").append("<tbody></tbody>");
+  }
+  // Append row to <table>
+  $("#tablaCliente tbody").append(
+    construirTabla(cliente));
+}
+
+function construirTabla(cliente) {
+  var ret =
+    "<tr>" +
+     "<td>" + cliente.nombre + "</td>" +
+     "<td>" + cliente.descripcion + "</td>"
+      + "<td>" + cliente.telefono + "</td>" +
+    "</tr>";
+  return ret;
+}
+
+$( "form" ).on( "submit", function(e) {
+    var dataString = $(this).serialize();
+    
+    // alert(dataString); return false; 
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:8080/api/cliente/",
+      data: dataString,
+      success: function () {
+		 $("#aviso").val("Se agrego el cliente con exito");
+      }
+    });
+    e.preventDefault();
+  });
+
+
+</script>
+<style>
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+}
+.titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 50px;
+  
+}
+
+.form {
+  width: 650px;
+}
+</style>
+</body>
+</html>
